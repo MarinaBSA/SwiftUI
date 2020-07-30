@@ -12,10 +12,13 @@ import SwiftUI
 struct ContentView: View {
     @State var placeholder = ""
     @ObservedObject var itemsManager = ItemsManager()
+    @State var showDeleteAlert = false
+    @State var deleteItemIndex: IndexSet? // can only change values in this struct if they have the property wrapper @State
 
     var body: some View {
         let newItem = { self.placeholder }
         let allItems = { self.itemsManager.retrieveAllItems() }
+        
         return VStack {
             TextField("Insert todo. Eg.: Buy Apples", text: $placeholder, onCommit: {
                 self.itemsManager.addNewItem(withContent: newItem())
@@ -30,10 +33,26 @@ struct ContentView: View {
                     // Items.Item -> conforms to Identifiable in order to be unique
                     // Use ItemView to create a View with the string as content in order to return something that conforms to the View protocol
                     return ItemView(rawValue: item.rawValue)
-                }.onDelete(perform: itemsManager.deleteItem)
+                }
+                    .onDelete(perform: deleteItem)
+                    .alert(isPresented: $showDeleteAlert) {
+                        Alert(title: Text("Warning"), message: Text("This item will be deleted"), primaryButton: .cancel(),
+                              secondaryButton: .destructive(Text("OK")) {
+                                if let index = self.deleteItemIndex {
+                                    self.itemsManager.deleteItem(index: index)
+                                }
+                            }
+                        )
+                    }
             })
         }
     }
+    
+    func deleteItem(index: IndexSet) {
+        showDeleteAlert = true
+        deleteItemIndex = index
+    }
+    
 }
 
 struct ItemView: View {
