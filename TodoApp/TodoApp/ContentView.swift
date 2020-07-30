@@ -15,6 +15,7 @@ struct ContentView: View {
 
     var body: some View {
         let newItem = { self.placeholder }
+        let allItems = { self.itemsManager.retrieveAllItems() }
         return VStack {
             TextField("Insert todo. Eg.: Buy Apples", text: $placeholder, onCommit: {
                 self.itemsManager.addNewItem(withContent: newItem())
@@ -23,32 +24,30 @@ struct ContentView: View {
                 .padding(.all)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .multilineTextAlignment(.center)
-            ItemsList(items: itemsManager.retrieveAllItems())
+            List(content: {
+                ForEach(allItems()) { item in
+                    // ForEach can only iterate over unique items and return items that conform to the View protocol
+                    // Items.Item -> conforms to Identifiable in order to be unique
+                    // Use ItemView to create a View with the string as content in order to return something that conforms to the View protocol
+                    return ItemView(rawValue: item.rawValue)
+                }.onDelete(perform: delete)
+            })
         }
+    }
+    
+    
+    func delete(index: IndexSet) {
+        print("deleting")
     }
 }
 
-struct ItemsList: View {
-    var items: [Items.Item]
+struct ItemView: View {
+    let rawValue: String
     var body: some View {
-        
-        return List(content: {
-            ForEach(items) { item in
-                // ForEach can only iterate over unique items and return items that conform to the View protocol
-                // Items.Item -> conforms to Identifiable in order to be unique
-                // Use ItemView to create a View with the string as content in order to return something that conforms to the View protocol
-                return ItemView(rawValue: item.rawValue)
-            }
-        })
-    }
-    
-    struct ItemView: View {
-        let rawValue: String
-        var body: some View {
-            Text(rawValue)
-        }
+        Text(rawValue)
     }
 }
+
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
