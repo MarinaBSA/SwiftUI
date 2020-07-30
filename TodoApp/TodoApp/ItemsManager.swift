@@ -15,5 +15,9 @@ class ItemsManager: ObservableObject {
         items.appendToItems(withContent: content)
     }
     
+    func deleteItem(index: IndexSet) {
+        items.deleteItem(index: index)
+    }
+    
     func retrieveAllItems() -> [Items.Item] { items.getAllItems() }
 }

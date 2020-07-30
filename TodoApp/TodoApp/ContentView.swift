@@ -24,20 +24,15 @@ struct ContentView: View {
                 .padding(.all)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .multilineTextAlignment(.center)
-            List(content: {
+            List(content: {     //Equivalent of UITableView
                 ForEach(allItems()) { item in
                     // ForEach can only iterate over unique items and return items that conform to the View protocol
                     // Items.Item -> conforms to Identifiable in order to be unique
                     // Use ItemView to create a View with the string as content in order to return something that conforms to the View protocol
                     return ItemView(rawValue: item.rawValue)
-                }.onDelete(perform: delete)
+                }.onDelete(perform: itemsManager.deleteItem)
             })
         }
-    }
-    
-    
-    func delete(index: IndexSet) {
-        print("deleting")
     }
 }
 

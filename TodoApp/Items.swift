@@ -17,6 +17,12 @@ struct Items {
         allItems.append(Item(rawValue: content))
     }
     
+    mutating func deleteItem(index: IndexSet) {
+        if let first = index.first {
+            allItems.remove(at: first)
+        }
+    }
+    
     struct Item: Identifiable {
         let id = UUID()
         let rawValue: String
